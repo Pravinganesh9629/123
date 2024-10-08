@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Management</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-app="taskApp" ng-controller="TaskController">
+  <div>
+    <h1>Task Manager</h1>
+
+    <!-- Task Input Form -->
+    <form ng-submit="addTask()">
+      <input type="text" ng-model="taskText" placeholder="Enter new task" required>
+      <button type="submit">Add Task</button>
+    </form>
+
+    <!-- Task List -->
+    <ul>
+      <li ng-repeat="task in tasks">
+        <!-- Task display or edit mode -->
+        <span ng-if="!task.editing">{{ task.name }}</span>
+        <input type="text" ng-if="task.editing" ng-model="task.name">
+        
+        <!-- Buttons for Edit, Update, Cancel, and Delete -->
+        <button ng-if="!task.editing" ng-click="editTask(task)">Edit</button>
+        <button ng-if="task.editing" ng-click="updateTask(task)">Update</button>
+        <button ng-if="task.editing" ng-click="cancelEdit(task)">Cancel</button>
+        <button ng-click="deleteTask($index)">Delete</button>
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    var app = angular.module('taskApp', []);
+    app.controller('TaskController', function($scope) {
+      // Array to store tasks
+      $scope.tasks = [];
+
+      // Add a new task
+      $scope.addTask = function() {
+        if ($scope.taskText) {
+          $scope.tasks.push({ name: $scope.taskText, editing: false });
+          $scope.taskText = '';  // Clear the input field after adding
+        }
+      };
+
+      // Edit an existing task
+      $scope.editTask = function(task) {
+        task.originalName = task.name; // Store original name in case of cancellation
+        task.editing = true;
+      };
+
+      // Update a task after editing
+      $scope.updateTask = function(task) {
+        task.editing = false; // Exit editing mode
+      };
+
+      // Cancel editing
+      $scope.cancelEdit = function(task) {
+        task.name = task.originalName; // Revert to original name
+        task.editing = false;
+      };
+
+      // Delete a task
+      $scope.deleteTask = function(index) {
+        $scope.tasks.splice(index, 1); // Remove task at the specified index
+      };
+    });
+  </script>
+</body>
+</html>
